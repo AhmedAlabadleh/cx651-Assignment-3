@@ -20,7 +20,7 @@ int main(int argc, char** argv){
     char* barcode_value = argv[1];
     int width = atoi(argv[2]);
     int height = atoi(argv[3]);
-    char* output_path = argv[4];
+    char* output_filepath = argv[4]; // Renamed to match assignment instructions
 
     // Call barcode to generate the image
     // As defined in barcode.h: struct image* barcode(char* data, int width, int height);
@@ -34,15 +34,20 @@ int main(int argc, char** argv){
 
     // Save result to file
     // As defined in loader.h: int saveimage(char* filename, struct image* image);
-    int save_result = saveimage(output_path, img);
+    int save_result = saveimage(output_filepath, img);
 
     if (save_result != 0) {
-        printf("Error: Failed to save image to %s\n", output_path);
+        printf("Error: Failed to save image to %s\n", output_filepath);
+        // Free memory before exiting on error
+        free(img->pixels);
+        free(img);
         return -1;
     }
 
-    // TODO: Free the allocated memory for 'img' if your barcode() 
-    // implementation dynamically allocates it, to prevent memory leaks.
+    // Free the allocated memory for 'img' to prevent leaks.
+    // This is important for the valgrind test in test.sh.
+    free(img->pixels);
+    free(img);
 
     return 0;
 }
