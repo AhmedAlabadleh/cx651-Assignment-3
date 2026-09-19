@@ -2,7 +2,7 @@
 #include "loader.h"
 #include <stdlib.h>
 #include <string.h>
-
+#include <stdio.h>
 
 int main(int argc, char** argv){
     // TODO: parse the arguments in argv. 
@@ -16,8 +16,33 @@ int main(int argc, char** argv){
         return -1;
     }
 
+    // Parse the arguments based on the expected format
+    char* barcode_value = argv[1];
+    int width = atoi(argv[2]);
+    int height = atoi(argv[3]);
+    char* output_path = argv[4];
 
-    // TODO: call barcode
-    
-    // TODO: save result to file
+    // Call barcode to generate the image
+    // As defined in barcode.h: struct image* barcode(char* data, int width, int height);
+    struct image* img = barcode(barcode_value, width, height);
+
+    // Check if image generation was successful
+    if (img == NULL) {
+        printf("Error: Failed to generate barcode image.\n");
+        return -1;
+    }
+
+    // Save result to file
+    // As defined in loader.h: int saveimage(char* filename, struct image* image);
+    int save_result = saveimage(output_path, img);
+
+    if (save_result != 0) {
+        printf("Error: Failed to save image to %s\n", output_path);
+        return -1;
+    }
+
+    // TODO: Free the allocated memory for 'img' if your barcode() 
+    // implementation dynamically allocates it, to prevent memory leaks.
+
+    return 0;
 }
